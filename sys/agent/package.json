@@ -1,0 +1,10 @@
+{
+  "name": "sys-agent",
+  "version": {
+    "code" :"1.0.0",
+    "protocol" : "1.2.0"
+  },
+  "description": "tingyun system agent",
+  "main": "index.js",
+  "author": "tingyun system agent team"
+}

@@ -1,0 +1,33 @@
+{
+	"server": {
+		"version": {
+			"code": "1.0.0",
+			"protocol": "1.2.0"
+		},
+		"license": "666-666-666",
+		"redirect": "http://192.168.2.164:18080",
+		"proxy": {
+			"-server": "http://192.168.2.51:8200",
+			"-auth": "tingyun:123456"
+		},
+		"compressed": true,
+		"domain": "D14823918401716"
+	},
+	"plugins": [
+		{
+			"name": "redis",
+			"version": "2.0.0",
+			"src": "http://123.206.203.123:3000/plugins/redis.zip",
+			"md5": "e3d1d08af0578ab0cba818474f3e942e",
+			"instances": [
+				{
+					"id": "redis_instance_id_01",
+					"url": "127.0.0.1:6379",
+					"params": {
+
+					}
+				}
+			]
+		}
+	]
+}

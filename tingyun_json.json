@@ -1,0 +1,13 @@
+{
+	"server": {
+		"version": {
+			"code": "1.0.0",
+			"protocol": "1.2.0"
+		},
+		"license": "666-666-666",
+		"redirect": "http://192.168.2.164:18080",
+		"compressed": true,
+		"domain": "kongjie_03"
+	},
+	"plugins": []
+}
