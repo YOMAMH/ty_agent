@@ -17,10 +17,6 @@ var all = [
 	'master_last_io_seconds_ago',
 	'master_repl_offset',
 	'slave_repl_offset',
-	'used_cpu_sys',
-	'used_cpu_user',
-	'used_cpu_sys_children',
-	'used_cpu_user_children',
 	'expired_keys',
 	'pubsub_patterns',
 	'pubsub_channels',
@@ -62,25 +58,42 @@ var byteItems = [
     'used_memory_peak',
     'used_memory_rss',
     'used_memory',
-    'repl_backlog_histlen'
+	'aof_current_size',
+	'aof_buffer_length'
 ];
 
 // /1024 字节转KB
 var otherItems = [
 	'used_memory_lua'
-]
+];
 
 //需要计算的指标
 var calculateMap = {
 	total_commands_processed:'command_qps',
     keyspace_hits:'keys_hits',
-    keyspace_misses:'keys_misses'
+    keyspace_misses:'keys_misses',
+    used_cpu_sys:'used_cpu_sys_sec',
+	used_cpu_user:'used_cpu_user_sec',
+	used_cpu_sys_children:'used_cpu_sys_children_sec',
+	used_cpu_user_children:'used_cpu_user_children_sec'
 };
+
+//乘以100
+var hundredMap = [
+	'aof_last_rewrite_time_sec',
+	'instantaneous_input_kbps',
+	'instantaneous_output_kbps',
+	'used_cpu_sys',
+	'used_cpu_user',
+	'used_cpu_sys_children',
+	'used_cpu_user_children'
+];
 
 module.exports = {
 	all			: all,
 	byteItems	: byteItems,
 	timeItems	: timeItems,
 	otherItems	: otherItems,
-    calculateMap: calculateMap
+    calculateMap: calculateMap,
+	hundredMap  : hundredMap
 };
