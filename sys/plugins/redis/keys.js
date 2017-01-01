@@ -29,6 +29,17 @@ var all = [
 	'rdb_last_bgsave_time_sec',
 ];
 
+var umap = {
+	B: 1,
+	ms: 1000,
+	hun:100,
+	kB: 1024,
+	KB: 1024,
+	mB: 1024 * 1024,
+	MB: 1024 * 1024,
+	gB: 1024 * 1024 * 1024,
+	GB: 1024 * 1024 * 1024,
+};
 // // sec to mili  
 // redis.aof_last_rewrite_time_sec
 // redis.used_cpu_user_children
@@ -95,5 +106,6 @@ module.exports = {
 	timeItems	: timeItems,
 	otherItems	: otherItems,
     calculateMap: calculateMap,
-	hundredMap  : hundredMap
+	hundredMap  : hundredMap,
+	umap:umap
 };
