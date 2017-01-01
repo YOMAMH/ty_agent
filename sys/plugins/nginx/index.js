@@ -1,10 +1,11 @@
 var json_util = require('../../agent/util/json');
 var Event = require('../../agent/util/event');
 var httpGet = require('./get');
+var keys = require('./keys');
 var flag = 0;
 var prove = 0;
 var nginxObj = {};
-var time = 0;
+var time = 2;
 var dif = 0;
 
 function NginxReader(logger, config) {
@@ -14,8 +15,11 @@ function NginxReader(logger, config) {
     time = config.time;
 };
 
+function handelStr() {
+
+}
 function readVal(str, name, endTok) {
-    var argMap = ['connect','success','request'];
+    var argMap = keys.values;
     var posAccess = '';
     var posEnd = '';
     var strArr = str.split('\n');
@@ -39,7 +43,8 @@ function readVal(str, name, endTok) {
 };
 
 // 获取nginx信息
-function readInfo(logger, time_out, config, cb) {
+// logger, time_out, config,
+function readInfo(cb) {
 
     // 获取nginx运行信息
     httpGet(config, onGet);

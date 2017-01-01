@@ -5,7 +5,7 @@ var keys = require('./keys');
 var endTok = '\r\n';
 var msg = 'NOAUTH Authentication required';
 var metrics = {};
-var time = 0;
+var time = 2;
 var flag = 0;
 var prove = {};
 
@@ -23,21 +23,20 @@ var umap = {
 };
 
 function handleStr(item, val) {
-if (parseInt(val) > 0) {
+if (parseInt(val) >= 0) {
     if (keys.all.indexOf(item) != -1) {
         val = parseInt(val);
         if (keys.byteItems.indexOf(item) != -1) val = val / (umap.MB);
         if (keys.timeItems.indexOf(item) != -1) val = val * (umap.ms);
         if (keys.otherItems.indexOf(item) != -1) val = val / (umap.KB);
-        if (keys.hundredMap.indexOf(item) != -1) val = val / (umap.hun);
+        if (keys.hundredMap.indexOf(item) != -1) val = val * (umap.hun);
         metrics[item] = parseInt(val).toString();
     }
 }
 
     if (keys.calculateMap.hasOwnProperty(item)) {
-        if (keys.hundredMap.indexOf(item) != -1) val = val / (umap.hun);
+        if (keys.hundredMap.indexOf(item) != -1) val = val *(umap.hun);
         metrics[keys.calculateMap[item]] = val;
-        console.log(metrics);
     }
 
     if (item == 'rdb_last_bgsave_time_sec') {
@@ -72,7 +71,7 @@ function do_read(logger, time_out, config,cb) {
         return str;
     }
 
-    var tn = new Telnet({url: '127.0.0.1:6379'});
+    var tn = new Telnet(config);
     tn.connect(function (err, client) {
         function retErr(err) {
             logger.error(err.toString());
@@ -114,25 +113,38 @@ function do_read(logger, time_out, config,cb) {
                 }
                 if (redisArr[i].indexOf('db0:') != -1) handleDb0(redisArr, i);
             }
+            var get_hit = 0;
+            var get_miss = 0;
             if (flag == 0) {
                 flag++;
                 for (k in keys.calculateMap) {
                     prove[keys.calculateMap[k]] = metrics[keys.calculateMap[k]];
+                    if (keys.calculateMap[k] == 'keys_hits') get_hit = metrics[keys.calculateMap[k]];
+                    if (keys.calculateMap[k] == 'keys_misses') get_miss = metrics[keys.calculateMap[k]];
                     metrics[keys.calculateMap[k]] = '0';
                 }
+                prove['keys_get_sec'] = parseInt(get_hit) + parseInt(get_miss);
+                metrics['keys_get_sec'] = '0';
             } else {
                 var f = 0;
                 var res = 0;
                 for (f in keys.calculateMap) {
-                    res = (metrics[keys.calculateMap[f]] - prove[keys.calculateMap[f]]);
-                    res = (res/time) > time ? (res/time) : res;
+                    res = result(metrics[keys.calculateMap[f]],prove[keys.calculateMap[f]],time);
                     prove[keys.calculateMap[f]] = metrics[keys.calculateMap[f]];
                     metrics[keys.calculateMap[f]] = parseInt(res).toString();
                 }
+                var getCount =  parseInt(prove['keys_hits']) + parseInt(prove['keys_misses']);
+                res = result(getCount,prove['keys_get_sec'],time);
+                metrics['keys_get_sec'] = res.toString();
             }
             callBack(null, metrics);
         });
     })
+}
+
+function result(arg1,arg2,time) {
+    var res = (parseInt(arg1) - parseInt(arg2));
+    return (res/time) > time ? (res/time) : res;
 }
 
 //配置有更新,uri变化,地址变化,则重新初始化数据
