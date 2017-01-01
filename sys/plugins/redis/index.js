@@ -2,10 +2,11 @@ var json_util = require('../../agent/util/json');
 var Event = require('../../agent/util/event');
 var Telnet = require('../../agent/util/telnet');
 var keys = require('./keys');
+var umap = keys.umap;
 var endTok = '\r\n';
 var msg = 'NOAUTH Authentication required';
 var metrics = {};
-var time = 2;
+var time = 0;
 var flag = 0;
 var prove = {};
 
@@ -15,12 +16,6 @@ function RedisReader(logger, config) {
     this.logger = logger;
     time = config.time;
 }
-
-
-var umap = {
-    kB: 1024, KB: 1024, mB: 1024 * 1024, MB: 1024 * 1024, B: 1, gB: 1024 * 1024 * 1024,
-    GB: 1024 * 1024 * 1024, ms: 1000,hun:100
-};
 
 function handleStr(item, val) {
 if (parseInt(val) >= 0) {
@@ -58,7 +53,6 @@ function do_read(logger, time_out, config,cb) {
     function callBack() {
         var callback = cb;
         cb = null;
-        console.log(arguments);
         if (callback) callback.apply(this, arguments);
     }
 
@@ -135,7 +129,7 @@ function do_read(logger, time_out, config,cb) {
                 }
                 var getCount =  parseInt(prove['keys_hits']) + parseInt(prove['keys_misses']);
                 res = result(getCount,prove['keys_get_sec'],time);
-                metrics['keys_get_sec'] = res.toString();
+                metrics['keys_get_sec'] = parseInt(res).toString();
             }
             callBack(null, metrics);
         });
