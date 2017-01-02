@@ -5,7 +5,7 @@ var keys = require('./keys');
 var flag = 0;
 var prove = {};
 var nginxObj = {};
-var time = 0;
+var time = 2;
 var dif = 0;
 var metrics = {};
 
@@ -38,8 +38,10 @@ function readVal(str, name, endTok) {
             case  'success':
                 return {value: arrTemp[2], end: str.indexOf(arrTemp[2])};
                 break;
-            default:
+            case 'request':
                 return {value: arrTemp[3], end: str.indexOf(arrTemp[3])};
+                break;
+            default :
                 break;
         }
     }
@@ -59,7 +61,6 @@ function readInfo(logger, time_out, config,cb) {
     function callBack() {
         var callback = cb;
         cb = null;
-        console.log(arguments);
         if (callback) callback.apply(this, arguments);
     }
 
@@ -69,9 +70,6 @@ function readInfo(logger, time_out, config,cb) {
             var msg = error.code || error.toString();
             return callBack({code: '1', msg: msg});
         }
-        // result = 
-        // "Active connections: 1 \nserver accepts handled requests request_time\n 26 26 36 \n
-        // Reading: 0 Writing: 1 Waiting: 0 \n"
 
         // 解析result, 生成json对象
         do {
@@ -125,7 +123,7 @@ function readInfo(logger, time_out, config,cb) {
                     }
                 }
                 var opened = parseInt(metrics['handled_success']/metrics['handled_requests']*100).toString();
-                var dropped = parseInt(((metrics['handled_requests'] - metrics['handled_success'])/metrics['handled_requests'])*100).toString();
+                var dropped = parseInt((Math.abs(metrics['handled_requests'] - metrics['handled_success'])/metrics['handled_requests'])*100).toString();
                 metrics['conns_opened_percent'] = opened;
                 metrics['connections_dropped_sec'] = dropped;
             }
@@ -133,7 +131,8 @@ function readInfo(logger, time_out, config,cb) {
         } while (false);
         return callBack({code: '1', msg: 'Unknown Server'});
     }
-};
+}
+
 
 // 配置有更新,uri变化,地址变化,则重新初始化数据
 NginxReader.prototype.update = function (new_instances) {
